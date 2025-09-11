@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Pool } from 'pg'
-import { sendBookingEmail } from '@/lib/email'
-
-export const runtime = 'nodejs'
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 
@@ -84,8 +81,6 @@ export async function POST(request: NextRequest) {
     ]
     const { rows } = await pool.query(insertQuery, values)
     const bookingRecord = mapRow(rows[0])
-
-    await sendBookingEmail(bookingRecord)
 
     return NextResponse.json({
       success: true,
