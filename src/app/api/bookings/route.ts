@@ -15,6 +15,7 @@ async function init() {
         service TEXT NOT NULL,
         group_size INTEGER NOT NULL,
         meeting_type TEXT NOT NULL,
+        location TEXT,
         name TEXT NOT NULL,
         email TEXT NOT NULL,
         phone TEXT NOT NULL,
@@ -24,6 +25,7 @@ async function init() {
         status TEXT NOT NULL
       )
     `)
+    await pool.query('ALTER TABLE bookings ADD COLUMN IF NOT EXISTS location TEXT')
     initialized = true
   }
 }
@@ -34,6 +36,7 @@ function mapRow(row: any) {
     service: row.service,
     groupSize: row.group_size,
     meetingType: row.meeting_type,
+    location: row.location,
     name: row.name,
     email: row.email,
     phone: row.phone,
@@ -53,6 +56,10 @@ export async function POST(request: NextRequest) {
     const requiredFields = ['service', 'groupSize', 'meetingType', 'name', 'email', 'phone', 'date', 'time']
     const missingFields = requiredFields.filter(field => !booking[field])
 
+    if (booking.meetingType === 'in-person' && !booking.location) {
+      missingFields.push('location')
+    }
+
     if (missingFields.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(', ')}` },
@@ -65,8 +72,8 @@ export async function POST(request: NextRequest) {
     const createdAt = new Date()
 
     const insertQuery = `
-      INSERT INTO bookings (id, service, group_size, meeting_type, name, email, phone, date, time, created_at, status)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+      INSERT INTO bookings (id, service, group_size, meeting_type, location, name, email, phone, date, time, created_at, status)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
       RETURNING *
     `
     const values = [
@@ -74,6 +81,7 @@ export async function POST(request: NextRequest) {
       booking.service,
       booking.groupSize,
       booking.meetingType,
+      booking.meetingType === 'in-person' ? booking.location : null,
       booking.name,
       booking.email,
       booking.phone,
@@ -85,7 +93,11 @@ export async function POST(request: NextRequest) {
     const { rows } = await pool.query(insertQuery, values)
     const bookingRecord = mapRow(rows[0])
 
-    await sendBookingEmail(bookingRecord)
+    try {
+      await sendBookingEmail(bookingRecord)
+    } catch (emailError) {
+      console.error('Email send error:', emailError)
+    }
 
     return NextResponse.json({
       success: true,

@@ -215,11 +215,11 @@ export default function BookingPage() {
 
                 <button
                   className={`w-full p-4 border-2 rounded-lg text-left hover:border-blue-500 transition-colors ${
-                    formData.meetingType === 'physical'
+                    formData.meetingType === 'in-person'
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200'
                   }`}
-                  onClick={() => setFormData({...formData, meetingType: 'physical'})}
+                  onClick={() => setFormData({...formData, meetingType: 'in-person'})}
                 >
                   <div className="flex items-center">
                     <MapPin className="mr-3" size={24} />
@@ -230,7 +230,7 @@ export default function BookingPage() {
                   </div>
                 </button>
 
-                {formData.meetingType === 'physical' && (
+                {formData.meetingType === 'in-person' && (
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Location
@@ -255,7 +255,7 @@ export default function BookingPage() {
                 </button>
                 <button
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                  disabled={!formData.meetingType || (formData.meetingType === 'physical' && !formData.location)}
+                  disabled={!formData.meetingType || (formData.meetingType === 'in-person' && !formData.location)}
                   onClick={() => setStep(4)}
                 >
                   Next
@@ -359,7 +359,7 @@ export default function BookingPage() {
                 <div className="space-y-2 text-sm">
                   <p><strong>Service:</strong> {formData.service}</p>
                   <p><strong>Attendees:</strong> {formData.groupSize} people</p>
-                  <p><strong>Type:</strong> {formData.meetingType === 'online' ? 'Online Meeting' : `In-Person at ${formData.location}`}</p>
+                <p><strong>Type:</strong> {formData.meetingType === 'online' ? 'Online Meeting' : `In-Person at ${formData.location}`}</p>
                   <p><strong>Contact:</strong> {formData.name} ({formData.email})</p>
                   <p><strong>Date & Time:</strong> {formData.date} at {formData.time}</p>
                 </div>

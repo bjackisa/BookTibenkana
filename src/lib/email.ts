@@ -13,16 +13,23 @@ interface BookingRecord {
   location?: string
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
-})
-
 export async function sendBookingEmail(booking: BookingRecord) {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env
+
+  // Skip sending if SMTP configuration is incomplete
+  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !SMTP_FROM) {
+    console.warn('SMTP configuration missing. Email not sent.')
+    return
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: Number(SMTP_PORT),
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS
+    }
+  })
   const locationInfo =
     booking.meetingType === 'online'
       ? 'Online Meeting'
@@ -40,10 +47,14 @@ export async function sendBookingEmail(booking: BookingRecord) {
     <p><strong>Phone:</strong> ${booking.phone}</p>
   `
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM,
-    to: ['barackdanieljackisa@gmail.com', 'tibedenis02@gmail.com'],
-    subject: `New Booking - ${booking.id}`,
-    html
-  })
+  try {
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: ['barackdanieljackisa@gmail.com', 'tibedenis02@gmail.com'],
+      subject: `New Booking - ${booking.id}`,
+      html
+    })
+  } catch (error) {
+    console.error('Failed to send booking email:', error)
+  }
 }
