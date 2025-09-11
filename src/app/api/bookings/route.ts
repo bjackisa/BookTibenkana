@@ -93,7 +93,11 @@ export async function POST(request: NextRequest) {
     const { rows } = await pool.query(insertQuery, values)
     const bookingRecord = mapRow(rows[0])
 
-    await sendBookingEmail(bookingRecord)
+    try {
+      await sendBookingEmail(bookingRecord)
+    } catch (emailError) {
+      console.error('Email send error:', emailError)
+    }
 
     return NextResponse.json({
       success: true,
