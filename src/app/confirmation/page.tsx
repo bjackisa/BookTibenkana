@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { CheckCircle, Calendar, Clock, Users, MapPin, Globe, Mail, Phone, User } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -20,7 +20,7 @@ interface BookingData {
   createdAt: string
 }
 
-export default function ConfirmationPage() {
+function ConfirmationPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [booking, setBooking] = useState<BookingData | null>(null)
@@ -211,5 +211,19 @@ export default function ConfirmationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <ConfirmationPageContent />
+    </Suspense>
   )
 }
