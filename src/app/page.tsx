@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Calendar as CalendarIcon, Clock, Users, MapPin, Globe } from 'lucide-react'
 import { format } from 'date-fns'
-import Calendar from '@/components/Calendar'
-import TimeSlotPicker from '@/components/TimeSlotPicker'
+import Calendar from '../components/Calendar'
+import TimeSlotPicker from '../components/TimeSlotPicker'
 
 export default function BookingPage() {
   const [step, setStep] = useState(1)

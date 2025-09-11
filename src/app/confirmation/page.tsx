@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CheckCircle, Calendar, Clock, Users, MapPin, Globe, Mail, Phone, User } from 'lucide-react'
 import { format } from 'date-fns'
 
