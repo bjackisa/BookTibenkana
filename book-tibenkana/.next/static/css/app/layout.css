@@ -563,6 +563,9 @@ video {
 .h-4 {
   height: 1rem;
 }
+.h-16 {
+  height: 4rem;
+}
 .min-h-screen {
   min-height: 100vh;
 }
@@ -583,6 +586,9 @@ video {
 }
 .w-4 {
   width: 1rem;
+}
+.w-auto {
+  width: auto;
 }
 .max-w-4xl {
   max-width: 56rem;

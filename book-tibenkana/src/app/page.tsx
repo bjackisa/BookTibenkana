@@ -26,11 +26,24 @@ export default function BookingPage() {
   })
 
   const services = [
-    'Consultation',
-    'Training Session',
-    'Workshop',
-    'Meeting',
-    'Presentation'
+    'Food & Beverage Product Formulation',
+    'Process Engineering (Prototype → Stabilize → Scale-Up)',
+    'Quality Management Setup (SOPs, PRPs, HACCP)',
+    'UNBS Q-Mark Certification Support',
+    'Export Readiness & Standards Compliance',
+    'Branding, Packaging & Labeling Design',
+    'Go-to-Market & Marketing Strategy',
+    'Systems Thinking Facilitation & Leadership Workshops',
+    'Entrepreneurship Mentorship (1:1 / Group)',
+    'Training of Trainers (ToT) – Product Dev, QC, Standards',
+    'Business Formalization & Compliance (URSB/URA/etc.)',
+    'Grant/Proposal Writing & Fundraising Strategy',
+    'Research & Analytics (Survey Design, Data Analysis, Dashboards)',
+    'HR Recruitment & Staff Training',
+    'Digital Product Development (Chatbots, Websites, Supabase, Payments)',
+    'Agri-Business Advisory (Poultry, Goats, Coffee, Vegetables)',
+    'Curriculum Design (Entrepreneurship & Leadership Programs)',
+    'Public Speaking & Event Moderation'
   ]
 
   const timeSlots = [
@@ -74,11 +87,18 @@ export default function BookingPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         <header className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <img 
+              src="https://tibenkana.org/storage/denis-logo-2.png" 
+              alt="Denis Tibenkana Logo" 
+              className="h-16 w-auto"
+            />
+          </div>
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             Book Tibenkana
           </h1>
           <p className="text-gray-600">
-            Professional appointment booking system
+            Professional Business Advisory & Consulting Services
           </p>
         </header>
 
@@ -109,7 +129,7 @@ export default function BookingPage() {
               <h2 className="text-2xl font-semibold mb-6 text-center">
                 Select a Service
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {services.map((service) => (
                   <button
                     key={service}
