@@ -1,10 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar, Clock, Users, MapPin, Globe } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Calendar as CalendarIcon, Clock, Users, MapPin, Globe } from 'lucide-react'
+import { format } from 'date-fns'
+import Calendar from '@/components/Calendar'
+import TimeSlotPicker from '@/components/TimeSlotPicker'
 
 export default function BookingPage() {
   const [step, setStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const router = useRouter()
+  
   const [formData, setFormData] = useState({
     service: '',
     groupSize: 1,
@@ -28,6 +36,39 @@ export default function BookingPage() {
   const timeSlots = [
     '09:00', '10:00', '11:00', '14:00', '15:00', '16:00'
   ]
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date)
+    setFormData({ ...formData, date: format(date, 'yyyy-MM-dd') })
+  }
+
+  const handleBookingSubmit = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Navigate to confirmation page with booking data
+        const bookingData = encodeURIComponent(JSON.stringify(result.booking))
+        router.push(`/confirmation?data=${bookingData}`)
+      } else {
+        alert(`Booking failed: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('Booking error:', error)
+      alert('Failed to book appointment. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -275,38 +316,21 @@ export default function BookingPage() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-medium mb-3 flex items-center">
-                    <Calendar className="mr-2" size={20} />
+                    <CalendarIcon className="mr-2" size={20} />
                     Select Date
                   </h3>
-                  <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({...formData, date: e.target.value})}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  <Calendar 
+                    selectedDate={selectedDate || undefined}
+                    onDateSelect={handleDateSelect}
                   />
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-3 flex items-center">
-                    <Clock className="mr-2" size={20} />
-                    Select Time
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {timeSlots.map((time) => (
-                      <button
-                        key={time}
-                        className={`p-2 border rounded-lg text-sm hover:border-blue-500 transition-colors ${
-                          formData.time === time
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200'
-                        }`}
-                        onClick={() => setFormData({...formData, time})}
-                      >
-                        {time}
-                      </button>
-                    ))}
-                  </div>
+                  <TimeSlotPicker
+                    selectedTime={formData.time}
+                    onTimeSelect={(time) => setFormData({...formData, time})}
+                    availableSlots={timeSlots}
+                  />
                 </div>
               </div>
 
@@ -325,15 +349,23 @@ export default function BookingPage() {
                 <button
                   className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                   onClick={() => setStep(4)}
+                  disabled={isLoading}
                 >
                   Back
                 </button>
                 <button
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
-                  disabled={!formData.date || !formData.time}
-                  onClick={() => alert('Appointment booked successfully!')}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center"
+                  disabled={!formData.date || !formData.time || isLoading}
+                  onClick={handleBookingSubmit}
                 >
-                  Book Appointment
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Booking...
+                    </>
+                  ) : (
+                    'Book Appointment'
+                  )}
                 </button>
               </div>
             </div>
