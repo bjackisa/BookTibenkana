@@ -1,12 +1,18 @@
 import React from 'react'
 import './globals.css'
 import { Inter } from 'next/font/google'
+import MaintenanceNotice from '../components/MaintenanceNotice'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const isMaintenanceMode = ['true', '1'].includes(
+  (process.env.MAINTENANCE_MODE ?? '').toString().trim().toLowerCase()
+)
+
 export const metadata = {
   title: 'Book Tibenkana - Professional Business Advisory',
-  description: 'Book appointments with Denis Tibenkana for business advisory, product development, and entrepreneurship services',
+  description:
+    'Book appointments with Denis Tibenkana for business advisory, product development, and entrepreneurship services',
   icons: {
     icon: 'https://tibenkana.org/storage/denis-logo-2.png',
     shortcut: 'https://tibenkana.org/storage/denis-logo-2.png',
@@ -21,7 +27,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {isMaintenanceMode ? <MaintenanceNotice /> : children}
+      </body>
     </html>
   )
 }
